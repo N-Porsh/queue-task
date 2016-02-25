@@ -1,0 +1,12 @@
+{
+    "name": "nporsh/myjar",
+    "authors": [
+        {
+            "name": "Nikita Porshnjakov",
+            "email": "n.porshnjakov@gmail.com"
+        }
+    ],
+    "require": {
+		"php-amqplib/php-amqplib": "2.5.*"
+	}
+}
