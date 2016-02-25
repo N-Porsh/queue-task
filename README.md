@@ -8,5 +8,5 @@ e-mail: n.porshnjakov@gmail.com
 Installation:
 ```bash
 $ composer install
-$ php queue_test_task.php
+$ php app.php
 ```
