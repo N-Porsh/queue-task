@@ -14,27 +14,33 @@ $channel->queue_declare('', false, false, false, false);
 
 echo ' [*] Waiting for messages. To exit press CTRL+C', "\n";
 
-$callback = function($msg) {
+$callback = function ($msg) {
     global $channel;
+
     $received = json_decode($msg->body);
 
-    $loanData = new InterestCalculation($received->sum, $received->days);
-    $loanData->calculateInterest();
+    echo "Received: " . $msg->body . "\n";
+    if (InterestCalculation::validateInput((array)$received)) {
+        $loanData = new InterestCalculation($received->sum, $received->days);
+        $loanData->calculateInterest();
 
-    $data = json_encode(
-        array(
-            "sum" => $loanData->sum,
-            "days" => $loanData->days,
-            "interest" => $loanData->interest,
-            "totalSum" => $loanData->interest + $received->sum,
-            "token" => "porsh",
-        )
-    );
+        $data = json_encode(
+            array(
+                "sum" => $loanData->sum,
+                "days" => $loanData->days,
+                "interest" => $loanData->interest,
+                "totalSum" => $loanData->interest + $loanData->sum,
+                "token" => "nikita_test",
+            )
+        );
 
-    $msg = new AMQPMessage($data, array('content_type' => 'text/json', 'delivery_mode' => 2));
-    $channel->basic_publish($msg, '', 'solved-interest-queue');
+        $msg = new AMQPMessage($data, array('content_type' => 'text/json', 'delivery_mode' => 2));
+        $channel->basic_publish($msg, '', 'solved-interest-queue');
 
-    //$msg->delivery_info['channel']->basic_ack($msg->delivery_info['delivery_tag']);
+        //$msg->delivery_info['channel']->basic_ack($msg->delivery_info['delivery_tag']);
+    } else {
+        echo "Incorrect input data! Waiting for next proper data...\n";
+    }
 };
 
 

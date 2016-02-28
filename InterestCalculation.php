@@ -24,7 +24,6 @@ class InterestCalculation
 
     /**
      * Calculate interest = sum of all days interests
-     * and total sum = sum of original amount and total interest
      */
     public function calculateInterest()
     {
@@ -46,5 +45,32 @@ class InterestCalculation
         }
 
         $this->interest = $totalInterest;
+    }
+
+    /**
+     * Validate input data for calculation
+     *
+     * @param $data - array
+     * @return bool
+     */
+    public static function validateInput($data)
+    {
+        // limit days to 100 years;
+        $maxDays = 36500;
+
+        if (count($data) != 2 || !isset($data['sum'], $data['days']) || $data['days'] > $maxDays) {
+            return false;
+        }
+
+        $func = function ($value) {
+            return floatval($value);
+        };
+        $data = array_map($func, $data);
+
+        foreach ($data as $val) {
+            if ($val < 1) return false;
+        }
+
+        return true;
     }
 }
